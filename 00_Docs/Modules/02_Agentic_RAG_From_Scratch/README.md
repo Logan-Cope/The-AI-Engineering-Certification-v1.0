@@ -1,4 +1,4 @@
-# Session 2: 🔁 Agentic RAG From Scratch
+# Module 2: 🔁 Agentic RAG From Scratch
 
 🎯 **Goal**: Understand what an “agent” is and look under the hood of agentic RAG and the create_agent abstraction
 
@@ -17,7 +17,7 @@
 
 ## 📛 Required Tooling & Account Setup
 
-In addition to the tools we've already learned, in this session you'll need:
+In addition to the tools we've already learned, in this module you'll need:
 
 1. Create a [LangSmith](https://smith.langchain.com/) account
 
@@ -38,7 +38,7 @@ In addition to the tools we've already learned, in this session you'll need:
 
 # 🗺️ Overview
 
-In Session 2, we introduce the Agent. What is an agent, exactly, and how do we use the construct to build awesome AI applications? And by the way, what does "agent" have to do with "RAG?"
+In Module 2, we introduce the Agent. What is an agent, exactly, and how do we use the construct to build awesome AI applications? And by the way, what does "agent" have to do with "RAG?"
 
 The core **concepts** we'll cover include the big idea behind the definition of an agent that's [been agreed upon](https://simonwillison.net/2025/Sep/18/agents/) by the industry; that is, that "an LLM agent runs tools in a loop to achieve a goal." We'll take this idea further and discuss the "agent harness" as well. In addition, we'll cover a bit of the history of Langchain and its evolution to v1.0. 
 
@@ -135,7 +135,7 @@ It consists of two main steps:
 2. **Tool execution** - executes the tools that the LLM requested, returns tool results
 3. Repeat
 
-The `create_agent` construct is what we use to build agent loops. That's what we'll do in today's session!
+The `create_agent` construct is what we use to build agent loops. That's what we'll do in today's module!
 
 At least, it's what we use when you use LangChain. As we'll see, when we get more complex we need to go to a heavier duty tool like LangGraph.
 
@@ -151,7 +151,7 @@ Due to the inclusion of cycles over loops, we can also compose rather complex fl
 
 **Why LangGraph?**
 
-During this session, *we will be using LangGraph as a Directed Acyclic Graph (DAG*).  Beyond the agent-forward approach - we can easily compose and combine traditional DAG chains with powerful cyclic behavior due to the tight integration with LCEL. 
+During this module, *we will be using LangGraph as a Directed Acyclic Graph (DAG*).  Beyond the agent-forward approach - we can easily compose and combine traditional DAG chains with powerful cyclic behavior due to the tight integration with LCEL. 
 
 In this way, LangGraph is a natural extension to LangChain's core offerings!
 
