@@ -1,19 +1,19 @@
-<p align="center" draggable="false"><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
 
-<h1 align="center" id="heading">Session 8: Model Context Protocol (MCP)</h1>
+
+# Session 8: Model Context Protocol (MCP)
 
 ### [Quicklinks]()
 
-| Session Sheet | Recording | Slides | Repo | Homework | Feedback |
-|:--------------|:----------|:-------|:-----|:---------|:---------|
-| [Session 8: MCP](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/08_MCP) |[Recording!](https://us02web.zoom.us/rec/share/rqw5I5hwbOOHy8TrGjnu0IjDJi53ykHb0k897jYfyHqZpgRhUuFP4A18d4NrcEKS.18sNk6Do9XwyaVUy) <br> passcode: `E56&^V+8`| [Session 8 Slides](https://canva.link/k8cixqgkfeghdsn) |You are here! | [Session 8 Assignment](https://forms.gle/TcjjChq38ydMjuqn8) | [Feedback 6/25](https://forms.gle/DvcWDgBXatBWCXqi7) |
+
+| Session Sheet                                                                                                              | Recording                                                                                                                                              | Slides                                                 | Repo          | Homework                                                    | Feedback                                             |
+| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
+| [Session 8: MCP](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/08_MCP) | [Recording!](https://us02web.zoom.us/rec/share/rqw5I5hwbOOHy8TrGjnu0IjDJi53ykHb0k897jYfyHqZpgRhUuFP4A18d4NrcEKS.18sNk6Do9XwyaVUy) passcode: `E56&^V+8` | [Session 8 Slides](https://canva.link/k8cixqgkfeghdsn) | You are here! | [Session 8 Assignment](https://forms.gle/TcjjChq38ydMjuqn8) | [Feedback 6/25](https://forms.gle/DvcWDgBXatBWCXqi7) |
+
 
 ## Useful Resources
 
 **MCP (Model Context Protocol)**
+
 - [MCP Official Docs](https://modelcontextprotocol.io/) — Spec, tutorials, and guides
 - [MCP-UI](https://mcpui.dev/) — Official standard for interactive UI in MCP
 - [MCP Auth Guide (Auth0)](https://auth0.com/blog/mcp-specs-update-all-about-auth/) — Deep dive into MCP auth spec updates
@@ -137,7 +137,7 @@ Shout out to @AIMakerspace !
 Feel free to reach out if you're curious or would like to collaborate on similar projects! 🤝🔥
 ```
 
-## Submitting Your Homework 
+## Submitting Your Homework
 
 Follow these steps to prepare and submit your homework assignment:
 
@@ -155,7 +155,9 @@ Why is OAuth important for MCP servers, and what security considerations should 
 
 #### Answer
 
-_(insert your answer here)_
+OAuth matters because these tools take real actions and store state per user. The cat shop keeps a separate cart for each person and runs a real checkout, so the server has to know who is calling before it does anything. OAuth handles that by making the user prove their identity once, after which the client carries a token on every tool call and the server maps that token back to the right user. Without it there is no safe way to keep one user's cart separate from another's, and no way to gate the tools that change data.
+
+The security considerations come from the fact that an AI client can call any tool you expose, in any order, with arguments it generated on its own. So you keep the set of exposed tools small and specific rather than dumping your whole API, you validate the inputs every tool receives, you scope what a given token is allowed to do so a read-only client cannot write or check out, and you never assume the model will avoid a destructive tool like checkout unless you guard it. Tools are an API into your system, so they deserve the same authentication, authorization, and input validation you would put on any public endpoint.
 
 ### Question #2
 
@@ -163,7 +165,9 @@ What is Streamable HTTP transport in MCP, and why might you expose a server publ
 
 #### Answer
 
-_(insert your answer here)_
+Streamable HTTP is the modern MCP transport. The server runs as a real HTTP service that can stream its responses, and because it lives at a URL on the network, many clients can connect to it at the same time. That is what makes it shareable, since ChatGPT, Claude Desktop, or my own client can all point at the same address and use the same tools.
+
+The older alternative is stdio, where the client launches the server as a local subprocess and talks to it over standard input and output. That is single client, same machine, and never touches the network, so it does not need authentication because the only thing that can reach it is the process that started it. You expose a server publicly with OAuth when you want it reachable by clients you do not control, running on other machines. The moment a server is reachable over the network it needs a lock on the door, and OAuth is that lock, which is why public HTTP and OAuth go together while local stdio can skip it.
 
 ## Activity 1: Extend the MCP Server
 

@@ -1,0 +1,5 @@
+# Local working docs (not part of the assignment)
+.loom/
+
+# Runtime database created when the server runs
+catshop.db
