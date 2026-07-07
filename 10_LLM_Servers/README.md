@@ -1,13 +1,12 @@
-<p align = "center" draggable="false" ><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
 
-## <h1 align="center" id="heading">Session 10: LLM Servers</h1>
 
-| 📰 Session Sheet                                  | ⏺️ Recording                           | 🖼️ Slides                                   | 👨‍💻 Repo       | 📝 Homework                                              | 📁 Feedback                        |
-| ------------------------------------------------- | -------------------------------------- | ------------------------------------------- | ------------- | -------------------------------------------------------- | ---------------------------------- |
-| [Session 10: LLM Servers](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/10_LLM_Servers) |[Recording!](https://us02web.zoom.us/rec/share/zXd6__uO2RwCmJUmNyGKY01sbwYjjrkpDDNPbfK_Es0MANaqRpFOqqYX4sEVYY1d.gJwTZk1729siXnjj) <br> passcode: `^1$@$R@.`| [Session 10 Slides](https://canva.link/953giejzt5igxvw) |You are here! | [Session 10 Assignment](https://forms.gle/hKxFnEM8U16fCCnG8) | [Feedback 7/2](https://forms.gle/uj2QvYjHfHKFFQ8a6) |
+## # Session 10: LLM Servers
+
+
+| 📰 Session Sheet                                                                                                                            | ⏺️ Recording                                                                                                                                           | 🖼️ Slides                                              | 👨‍💻 Repo    | 📝 Homework                                                  | 📁 Feedback                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- | ------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| [Session 10: LLM Servers](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/10_LLM_Servers) | [Recording!](https://us02web.zoom.us/rec/share/zXd6__uO2RwCmJUmNyGKY01sbwYjjrkpDDNPbfK_Es0MANaqRpFOqqYX4sEVYY1d.gJwTZk1729siXnjj) passcode: `^1$@$R@.` | [Session 10 Slides](https://canva.link/953giejzt5igxvw) | You are here! | [Session 10 Assignment](https://forms.gle/hKxFnEM8U16fCCnG8) | [Feedback 7/2](https://forms.gle/uj2QvYjHfHKFFQ8a6) |
+
 
 **⚠️!!! PLEASE BE SURE TO SHUTDOWN YOUR DEDICATED ENDPOINT ON FIREWORKS AI WHEN YOU'RE FINISHED YOUR ASSIGNMENT !!!⚠️**
 
@@ -18,7 +17,6 @@ In today's assignment, we'll be creating Fireworks AI endpoints, and then buildi
 - 🤝 Breakout Room #1
   - Set-up Open Source Endpoint (Instructions [here](./ENDPOINT_SETUP.md)) ((This process may take 15-20min.))
   - Test Endpoint and Embeddings with the `endpoint_slammer.ipynb` notebook.
-
 - 🤝 Breakout Room #2
   - Use the Open Source Endpoints to build a RAG LangGraph application
 
@@ -83,7 +81,7 @@ What is the difference between serverless and dedicated endpoints?
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+Serverless and dedicated are two ways to run a model behind an endpoint. With serverless you pay by usage. The provider spins the model up when you send a request, runs it, and spins it back down when you are done, so there is no server sitting there that belongs to you. You share capacity with other people, which keeps it cheap and makes it a good fit for light or spiky traffic. With a dedicated endpoint you rent a server that stays running and is yours alone. It can take a minute to set up, and the first request after it has been idle can be slow while it warms back up, but once it is going you get consistent speed because nobody else is using it. You pay by the hour whether or not you are sending requests, so it makes sense when you have steady heavy usage or a big batch job like running evaluations, where you want to hit it hard for a flat cost.
 
 ### ❓ Question #2:
 
@@ -91,7 +89,7 @@ Why is it important to consider token throughput and latency when choosing an LL
 
 #### ✅ Answer:
 
-_(insert your answer here)_
+Throughput and latency matter because they decide how the app actually feels to the person using it. Latency is how long the user waits before the answer starts showing up, and if that wait is long the app feels broken and people give up and leave. Throughput is how many tokens per second the model can produce and how many users it can handle at the same time. On a single GPU the throughput drops as more people use it at once, so an app that feels fast for a few users can slow to a crawl once a lot of people are on it. This is why you cannot just pick the biggest, smartest model. A large model that takes a minute to answer can be a worse experience than a smaller model that responds right away, so for anything a real person is waiting on you have to balance quality against speed and how many users you need to serve.
 
 ## Activity 1: RAGAS Evaluation with Cost Analysis
 
@@ -107,3 +105,32 @@ Swap out the Fireworks AI endpoints for **locally-running open-source models** u
 - Reflect: what are the trade-offs of local models vs. managed endpoints in a production setting?
 
 Include your findings and a demo in your Loom video.
+
+### Results
+
+My implementation is in `activity1_ragas_eval.ipynb`.
+
+Setup: I built two RAG pipelines over the same feline-health PDF with the same prompt, chunking, and retrieval settings, so the only difference is the models. The open-source stack uses Fireworks gpt-oss-20b for generation and qwen3-embedding-8b for retrieval. The OpenAI stack uses gpt-4.1-mini for generation and text-embedding-3-small for retrieval. I scored both with RAGAS using a single gpt-4.1-mini judge, and I traced every call to LangSmith to capture token usage and cost.
+
+Quality (RAGAS, 0 to 1, higher is better):
+
+
+| Metric                   | Fireworks (open-source) | OpenAI (gpt-4.1-mini) |
+| ------------------------ | ----------------------- | --------------------- |
+| Context precision        | 0.72                    | 0.92                  |
+| Context recall           | 1.00                    | 1.00                  |
+| Faithfulness             | 0.80                    | 1.00                  |
+| Answer relevancy         | 0.74                    | 0.76                  |
+| Factual correctness (F1) | 0.49                    | 0.54                  |
+
+
+Cost:
+
+
+|                     | Fireworks (open-source) | OpenAI (gpt-4.1-mini) |
+| ------------------- | ----------------------- | --------------------- |
+| Cost per query      | $0.0003                 | $0.0011               |
+| Cost per 1M queries | $280.82                 | $1,128.32             |
+
+
+Findings: the OpenAI stack scored higher on most quality metrics or tied, and it clearly won on faithfulness and context precision. The open-source stack was more conservative and answered "I don't know" on one question when its retrieval missed the exact chunk, which keeps it honest but lowers its accuracy. On cost the open-source stack was about four times cheaper per query, and that gap grows at scale. The takeaway is a quality versus cost tradeoff. The closed model is a bit more accurate, but the open-source stack is much cheaper and can also be run privately, so for a high-volume or privacy-sensitive app it is a reasonable choice even at slightly lower accuracy. All runs are traced in LangSmith under the session10-ragas-eval project.
