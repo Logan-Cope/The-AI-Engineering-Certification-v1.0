@@ -25,3 +25,6 @@ frontend/next-env.d.ts
 
 # OS / editor
 .DS_Store
+
+# Local working docs (handoff, cheat sheet, transcript) — not part of the assignment
+.loom/

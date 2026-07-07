@@ -1,27 +1,28 @@
-<p align="center" draggable="false"><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
 
-<h1 align="center" id="heading">Session 9: Agent Servers</h1>
+
+# Session 9: Agent Servers
 
 ### [Quicklinks]()
 
-| Session Sheet | Recording | Slides | Repo | Homework | Feedback |
-|:--------------|:----------|:-------|:-----|:---------|:---------|
-| [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) |[Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) <br> passcode: `r14dvS$V`| [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
+| Session Sheet                                                                                                                                                              | Recording                                                                                                                                              | Slides                                                 | Repo          | Homework                                                    | Feedback                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------- | ----------------------------------------------------------- | --------------------------------------------------- |
+| [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) | [Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) passcode: `r14dvS$V` | [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
 
 ## Useful Resources
 
 **LangSmith Deployment & Studio**
+
 - [LangSmith Deployment docs](https://docs.langchain.com/langsmith/deployments) — Deploy, manage, and monitor agent APIs
 - [LangGraph Studio](https://docs.langchain.com/langgraph-platform/langgraph-studio) — Visualize, debug, and test agents locally and in production
 - [Agent Server API](https://docs.langchain.com/langsmith/agent-server) — Threads, runs, assistants, and streaming
 - [You don't know what your agent will do until it's in production](https://blog.langchain.com/you-dont-know-what-your-agent-will-do-until-its-in-production/)
 
 **Frontend Integration**
-- [`@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
-- [`langgraph-nextjs-api-passthrough`](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough) — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
+
+- `[@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
+- `[langgraph-nextjs-api-passthrough](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough)` — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
 - [Next.js on Vercel](https://vercel.com/docs/frameworks/nextjs) — Deploy the frontend
 
 ## What You Are Building
@@ -39,6 +40,8 @@ flowchart LR
   Agent --> Tools[Tools + RAG + memory]
   LangSmith --> Traces[LangSmith tracing & evals]
 ```
+
+
 
 > **Important:** LangSmith deploys your agent as an **API backend only**. It does not serve a frontend. Vercel hosts the UI; LangSmith hosts the agent.
 
@@ -346,7 +349,7 @@ LANGSMITH_API_KEY=lsv2_pt_...
 NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 ```
 
-4. Deploy
+1. Deploy
 
 ### 3. Verify end-to-end
 
@@ -428,7 +431,7 @@ Why does LangSmith deploy your agent as an API backend only, and why do you stil
 
 #### Answer
 
-_(insert your answer here)_
+LangSmith deploys the agent as an API backend, which means it gives you endpoints for things like threads, runs, and assistants, plus streaming. It does not serve a website. That API is really meant to be called by code and to let a developer trace and debug runs, not for a regular user to look at directly. So you still need a separate frontend like the one on Vercel to give users an actual interface to chat with, and to give you a safe server side place to call the agent. The agent runtime and the user interface are two different things with different jobs, so it makes sense to deploy them separately.
 
 ### Question #2
 
@@ -436,11 +439,17 @@ Why should the LangSmith API key live in a Next.js API route (server-side) inste
 
 #### Answer
 
-_(insert your answer here)_
+Anything that lives in the browser or in client side code can be seen by the user if they open the dev tools, so an API key there could be copied and used by anyone. That would run up my usage and my bill. Putting the key in the Next.js API route keeps it on the server instead. The route adds the key to the request before it gets forwarded to the agent, and the browser only ever talks to my own /api. It is the same idea as never putting secrets in front end code.
 
 ## Activity 1: Build a Helpfulness Loop in Production
 
 Build an `agent_with_helpfulness` graph that adds a post-response helpfulness check: after the agent answers, a judge model decides whether the response is helpful, and if not, the graph loops back for another attempt (with a safe loop limit). Register it in `langgraph.json`, deploy it, then compare LangSmith traces for queries that pass vs. fail the helpfulness check. Does the retry loop behave differently in Studio vs. production?
+
+For this activity I built a second graph called agent_with_helpfulness and registered it in langgraph.json as its own assistant. It works like the simple agent, but after the agent gives a final answer, a judge model reads the original question and the answer and replies with just Y or N. If the answer is judged helpful (Y) the graph ends. If not (N) it loops back to the agent to try again. To keep it from looping forever, there is a guard: once the conversation grows past a set number of messages, the graph forces a stop instead of retrying again.
+
+When I compared traces in LangSmith, a clear question like "What are common signs of feline dehydration?" passed the check in one shot, so its trace is short: agent, tool call, agent, helpfulness Y, end. A weak or nonsense query failed the check and looped, so its trace shows the agent running several times with repeated helpfulness N steps before the guard stops it.
+
+On whether the retry loop behaves differently in Studio versus production: the logic is the same in both, because it is the same graph and the same guard running either way. The difference is visibility. In Studio I can watch each loop happen node by node, while in production the loop runs behind the scenes and the user only sees the final answer, waiting a little longer if it retried. One thing I noticed is that the judge is not perfectly deterministic, so the same query can pass on one run and loop on another, which is a good reminder of why you keep a safety guard and why you monitor runs with traces once it is in production.
 
 ## Advanced Activity: Auth and Custom Routes
 
