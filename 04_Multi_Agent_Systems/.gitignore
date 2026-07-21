@@ -4,3 +4,5 @@ __pycache__/
 *.py[cod]
 .env
 uv.lock
+.claude/settings.local.json
+activity2_results.json

@@ -11,7 +11,7 @@ from app.models import get_chat_model
 from app.tools import get_tool_belt
 
 # Safety limit: stop looping once the conversation grows past this many messages,
-# so a response the judge never likes can't retry forever.
+# so a response the judge never likes can't retry forever.0
 MAX_MESSAGES = 10
 
 
